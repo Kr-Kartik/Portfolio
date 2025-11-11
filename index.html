@@ -87,41 +87,67 @@
     @media (max-width:900px){ .name{font-size:44px} }
 
     /* role line (tightened spacing between prefix and role) */
-    .role-line{
-      display:flex;
-      align-items:center;
-      gap:10px;                  /* reduce horizontal gap between prefix and role */
-      margin:4px 0 8px;         /* tighten vertical spacing around role line */
-      font-size:20px;
-      color:var(--muted);
-    }
-    .role-prefix{
-      opacity:0.95;
-      min-width:auto;           /* don't reserve large width */
-      font-weight:500;
-    }
-    .role-dynamic{
-      font-weight:700;
-      position:relative;
-      display:inline-block;
-      padding-right:6px;
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      background-image: linear-gradient(90deg, rgba(108,76,255,1), rgba(255,73,198,1));
-      text-shadow: 0 6px 22px rgba(108,76,255,0.06);
-      transition: letter-spacing .22s ease, transform .18s ease;
-      white-space:nowrap;
-    }
-    .role-dynamic.typing{ letter-spacing: 1px; transform:translateY(-2px); }
+   /* role line — tighten spacing and ensure baseline alignment */
+.role-line{
+  display:flex;
+  align-items:center;
+  gap:8px;                 /* slightly tighter than before for balance */
+  margin:2px 0 6px;        /* vertical spacing tuned */
+  font-size:20px;
+  color:var(--muted);
+  /* ensure children share same baseline for perfect caret alignment */
+  align-items: baseline;
+}
 
-    /* caret */
-    .caret{
-      width:2px;height:22px;background:linear-gradient(180deg,var(--primary),var(--accent));
-      display:inline-block;margin-left:6px;border-radius:1px;
-      animation:blink 1s steps(1) infinite;
-    }
-    @keyframes blink{50%{opacity:0}}
+/* prefix stays same-ish */
+.role-prefix{
+  opacity:0.95;
+  min-width:auto;
+  font-weight:500;
+}
+
+/* make dynamic text an inline-flex so caret can sit perfectly next to it */
+.role-dynamic{
+  font-weight:700;
+  position:relative;
+  display:inline-flex;
+  align-items:baseline;    /* align characters and caret on same baseline */
+  padding-right:0px;       /* small breathing room on right */
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  background-image: linear-gradient(90deg, rgba(108,76,255,1), rgba(255,73,198,1));
+  text-shadow: 0 6px 22px rgba(108,76,255,0.06);
+  transition: letter-spacing .18s ease, transform .14s ease;
+  white-space:nowrap;
+  line-height:1;
+}
+
+/* subtle micro-move while typing */
+.role-dynamic.typing{
+  letter-spacing: 0.8px;
+  transform: translateY(-2px);
+}
+
+/* caret — smaller margin, height matches line-height, vertically aligned */
+.caret{
+  width:2px;
+  height:1.05em;                             /* scale with font size */
+  background: linear-gradient(180deg,var(--primary),var(--accent));
+  display:inline-block;
+  margin-left:0px;                           /* small gap so it doesn't touch text */
+  border-radius:1px;
+  vertical-align:baseline;                   /* ensures perfect baseline alignment */
+  animation:blink 900ms steps(1) infinite;
+  will-change:opacity, transform;
+  transform-origin: center;
+}
+
+/* faster blink, smoother */
+@keyframes blink{
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
 
     /* paragraph under role: increase gap above paragraph and larger gap after paragraph */
     .lead{
@@ -234,16 +260,41 @@
       display:flex; align-items:center; justify-content:center;
       padding:22px;
       position:relative;
+
     }
     .project .shot .img {
-      width:100%; height:320px; border-radius:12px; overflow:hidden;
+      width:100%; height:260px; border-radius:12px; overflow:hidden;
       background:#4b4b5a;
       display:flex; align-items:center; justify-content:center;
       color:rgba(255,255,255,0.18);
       font-size:14px; text-align:center;
-      aspect-ratio: 4/3;
+      
     }
     .project .shot img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .project .shot .img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* THE MAGIC */
+  display: block;
+  transition: transform .45s ease;
+}
+
+.project:hover .shot .img img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+  .project .shot .img {
+    height: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .project .shot .img {
+    height: 160px;
+  }
+}
 
     .project .meta {
       padding:28px 32px;
@@ -750,7 +801,7 @@ textarea {
         <div class="avatar-card" aria-hidden="false">
           <div class="avatar-inner float" id="avatarInner" role="img" aria-label="Coding avatar - replaceable">
             <!-- Replace the img with a Lottie player or your animated SVG -->
-            <img src="./assets/images/IMG_0955.JPG" alt="Coding workspace">
+            <img src="assets\images\unnamed.jpg" alt="Coding workspace">
 
           </div>
         </div>
@@ -819,7 +870,7 @@ When you control the data, you control your body—simple, measurable, undeniabl
         <!-- Project 3 -->
         <article class="project" tabindex="0" aria-labelledby="p3-title">
           <div class="img">
-      <img src="" alt="calories Project Preview" />
+      <img src="" alt="Civic + preview" />
     </div>
 
           <div class="meta">
